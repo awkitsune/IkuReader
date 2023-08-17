@@ -1,0 +1,9 @@
+Source for IkuReader, an e-book reader for Nintendo DS
+
+Repository: http://code.google.com/p/ikureader/
+
+Author's e-mail: nopleasenoo@gmail.com
+
+Compile with devkitARM 32 and libnds 1.5.0
+
+Version 0.065

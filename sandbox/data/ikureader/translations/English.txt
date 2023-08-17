@@ -1,0 +1,28 @@
+﻿Files
+Resume
+Backlight
+Encoding
+Close
+Justify
+Invert
+Thickness
+Colors
+Screens
+Rotate
+Progress
+Font
+Size
+Style
+Line gap
+Sharpness
+Indent
+top
+bottom
+both
+Language
+< Older
+Newer >
+Set
+Remove
+Ok
+Bookmarks
