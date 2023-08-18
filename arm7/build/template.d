@@ -31,8 +31,7 @@ template.o: C:/Users/vladi/source/IkuReader/arm7/source/template.c \
  C:/devkitPro/libnds/include/nds/arm7/i2c.h \
  C:/devkitPro/libnds/include/nds/arm7/sdmmc.h \
  C:/devkitPro/libnds/include/nds/arm7/serial.h \
- C:/devkitPro/libnds/include/nds/arm7/touch.h \
- C:/Users/vladi/source/IkuReader/include/ndsx_brightness.h
+ C:/devkitPro/libnds/include/nds/arm7/touch.h
 C:/devkitPro/libnds/include/nds.h:
 C:/devkitPro/libnds/include/nds/libversion.h:
 C:/devkitPro/libnds/include/nds/ndstypes.h:
@@ -66,4 +65,3 @@ C:/devkitPro/libnds/include/nds/arm7/i2c.h:
 C:/devkitPro/libnds/include/nds/arm7/sdmmc.h:
 C:/devkitPro/libnds/include/nds/arm7/serial.h:
 C:/devkitPro/libnds/include/nds/arm7/touch.h:
-C:/Users/vladi/source/IkuReader/include/ndsx_brightness.h:

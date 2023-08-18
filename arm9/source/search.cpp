@@ -43,7 +43,7 @@ void percent(u32 i, u32 total_parag, string& str)
 {
 	if(i % 20 != 0) return;
 	print_serarch();
-	iprintf("%s\n%d%%", str.c_str(), i * 100 / total_parag);
+	iprintf("%s\n%lu%%", str.c_str(), i * 100 / total_parag);
 }
 }
 

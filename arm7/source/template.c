@@ -30,7 +30,11 @@
 #include <nds.h>
 //#include <dswifi7.h>
 //#include <maxmod7.h>
-#include "ndsx_brightness.h"
+
+#define BACKLIGHT_FIFO	FIFO_USER_08
+#define PM_DSLITE_REG	(4)
+#define PM_IS_LITE		BIT(6)
+#define PM_BACKLIGHTS	(PM_BACKLIGHT_BOTTOM | PM_BACKLIGHT_TOP)
 
 //---------------------------------------------------------------------------------
 void VblankHandler(void) {

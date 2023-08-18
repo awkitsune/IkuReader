@@ -1,4 +1,3 @@
-#include <fat.h>
 #include "renderer.h"
 #include "txt.h"
 #include "fb2.h"
@@ -10,6 +9,10 @@
 #include <sys/dir.h>
 #include <stdio.h>
 #include "encoding_tables.h"
+
+#include <nds.h>
+#include <filesystem.h>
+#include <fat.h>
 
 
 const int giant_buf_size = 1800000;	// ~1.8 MB
@@ -59,9 +62,9 @@ int main(int argc, char *argv[])
 	iprintf("loading file system... ");
 	if (!fatInitDefault()) bsod("error\n\ntried DLDI patch?");
 	consoleClear();
-	DIR_ITER* dir = diropen("/data/ikureader/");
-	if(!dir) bsod("\nFolder data/ikureader not found.\nCopy it to the root of your\nflash card from the installationpackage.");
-	dirclose(dir);
+	DIR* dir = opendir("/data/ikureader/");
+	if(!dir) bsod("\nFolder data/ikureader not found.\nCopy it to the root of your\nflash card from the installation package.");
+	closedir(dir);
 	settings::load();
 	iprintf("loading fonts... ");
 	renderer::initFonts();

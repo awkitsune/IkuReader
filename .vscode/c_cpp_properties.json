@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "C:/devkitPro/libnds/include/**",
+                "C:/devkitPro/devkitARM/arm-none-eabi/include/**",
+                "${workspaceFolder}/include"
+            ],
+            "defines": [
+                "ARM9",
+                "ARM7"
+            ],
+            "compilerPath": "/usr/bin/g++",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "${default}"
+        }
+    ],
+    "version": 4
+}

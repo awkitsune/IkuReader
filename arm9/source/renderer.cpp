@@ -6,6 +6,15 @@
 #include <sys/dir.h>
 #include <sys/unistd.h>
 #include <set>
+
+#include <nds.h>
+#include <fat.h>
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <dirent.h>
+
 #include FT_LCD_FILTER_H
 #include FT_CACHE_H
 
@@ -374,14 +383,14 @@ void printClock(scr_id scr, bool forced)
 
 void changeFont()
 {
-	char fname[MAXPATHLEN];
-	struct stat st;
-	DIR_ITER* dir = diropen ("/data/ikureader/fonts/");
-	if (dir == NULL) bsod("Cannot open directory.");
+	char fname[MAXNAMLEN];
+	DIR* dir = opendir ("/data/ikureader/fonts/");
+	if (dir == NULL) bsod("Cannot open fonts directory.");
+	struct dirent* ent;
 	std::set<string> files;
-	while (0 == dirnext(dir, fname, &st))
-		if (!(st.st_mode & S_IFDIR)) if(extention(fname) == "ttf") files.insert(noExt(fname));
-	dirclose(dir);
+	while ((ent = readdir(dir)) != NULL)
+		if (ent->d_type != DT_DIR) if(extention(fname) == "ttf") files.insert(noExt(fname));
+	closedir(dir);
 	std::set<string> fonts;
 	
 	for (std::set<string>::iterator it = files.begin(); it != files.end(); ++it)

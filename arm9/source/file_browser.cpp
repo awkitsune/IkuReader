@@ -2,13 +2,19 @@
 #include "renderer.h"
 #include "screens.h"
 #include "controls.h"
-#include <sys/dir.h>
-#include <sys/unistd.h>
 #include <algorithm>
+
+#include <nds.h>
+#include <fat.h>
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <dirent.h>
 
 bool comp(entry e1, entry e2)
 {
-	if(e1.first == e2.first) return 0 > strcmpi(e1.second.c_str(), e2.second.c_str());
+	if(e1.first == e2.first) return 0 > strcmp(e1.second.c_str(), e2.second.c_str());
 	else return e1.first > e2.first;
 }
 
@@ -16,22 +22,28 @@ void file_browser :: cd()
 {
 	pos = 0;
 	flist.clear();
-	char fname[MAXPATHLEN];
-	struct stat st;
-	DIR_ITER* dir = diropen (path.c_str());
-	if (dir == NULL) bsod("Cannot open directory.");
+	char fname[MAXNAMLEN];
+
+	DIR* dir = opendir(path.c_str());
+	struct dirent* ent;
+	if(!dir) bsod(("cannot open "  + path).c_str());
+
 	if(path != "/") flist.push_back(entry(folder, ".."));
-	while (0 == dirnext(dir, fname, &st)) {
-		string filename(fname);
-		if ((st.st_mode & S_IFDIR) && (filename != ".") && (filename != "..")) {
-			flist.push_back(entry(folder, filename));
+
+	while ((ent = readdir(dir)) != NULL) {
+		if(strcmp(".", ent->d_name) == 0 || strcmp("..", ent->d_name) == 0)
+			continue;
+
+		if ((ent->d_type != DT_DIR)) {
+			flist.push_back(entry(folder, ent->d_name));
 		}
 		else {
-			string ext(extention(filename));
-			if(ext == "txt" || ext == "fb2"  || ext == "epub") flist.push_back(entry(file, filename));
+			string ext(extention(ent->d_name));
+			if(ext == "txt" || ext == "fb2"  || ext == "epub") flist
+			.push_back(entry(file, ent->d_name));
 		}
 	}
-	dirclose(dir);
+	closedir(dir);
 	sort (flist.begin(), flist.end(), comp);
 }
 
@@ -63,14 +75,17 @@ string file_browser :: run()
 	powerOff(PM_BACKLIGHT_TOP);
 	
 	string start_path = settings::recent_book.substr(0, settings::recent_book.find_last_of('/')) + '/';
-	DIR_ITER* dir = diropen(start_path.c_str());
+	
+	DIR* dir = opendir(path.c_str());
+	if(!dir) bsod(("cannot open "  + path).c_str());
+
 	if(dir == NULL || settings::recent_book.empty()) {
 		start_path = "/books/";
-		DIR_ITER* dir = diropen(start_path.c_str());
+		dir = opendir(start_path.c_str());
 		if(dir == NULL)  start_path = "/";
-		else dirclose(dir);
+		else closedir(dir);
 	}
-	else dirclose(dir);
+	else closedir(dir);
 	path = start_path;
 
 	cd();
@@ -121,7 +136,7 @@ string extention(string name)
 
 string noExt(string name)
 {
-	uint found = name.find_last_of('/');
+	unsigned int found = name.find_last_of('/');
 	string n;
 	if (found == string::npos) 
 		 n = name.substr(0, name.find_last_of('.'));
@@ -132,7 +147,7 @@ string noExt(string name)
 
 string noPath(string name)
 {
-	uint found = name.find_last_of('/');
+	unsigned int found = name.find_last_of('/');
 	string n;
 	if (found == string::npos) 
 		 n = name;

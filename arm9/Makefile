@@ -14,7 +14,7 @@ include $(DEVKITARM)/ds_rules
 # SOURCES is a list of directories containing source code
 # INCLUDES is a list of directories containing extra header files
 #-----------------------------------------------------------------------
-TARGET		:=	iku
+TARGET		:=	arm9
 BUILD		:=	build
 SOURCES		:=	source source/lib
 INCLUDES	:=	../include ../include/freetype2 ../include/utf8 ../include/pugi ../include/zip
@@ -23,22 +23,20 @@ DATA		:=	../data
 #-----------------------------------------------------------------------
 # options for code generation
 #-----------------------------------------------------------------------
-#ARCH	:=	-mthumb -mthumb-interwork -march=armv5te -mtune=arm946e-s 
-ARCH	:=	-mthumb -mthumb-interwork -mcpu=arm9tdmi -mtune=arm9tdmi 
+ARCH	:=	-mthumb -mthumb-interwork -march=armv5te -mtune=arm946e-s 
 
-CFLAGS	:=	-Wall -fomit-frame-pointer \
-		-ffast-math $(ARCH) $(INCLUDE) -DARM9 -Os
+CFLAGS	:=	-g -Wall -O3 -ffast-math \
+            $(ARCH) $(INCLUDE) -DARM9
 
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions 
 
 ASFLAGS	:=	-g $(ARCH)
-LDFLAGS	=	-specs=ds_arm9.specs -g $(ARCH) -mno-fpu \
-		-Wl,-Map,$(notdir $*.map)
+LDFLAGS	:=	-specs=ds_arm9.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 
 #-----------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #-----------------------------------------------------------------------
-LIBS	:= -lz -lfreetype -lfat -lnds9
+LIBS	:= -lz -lfreetype -lfilesystem -lfat -lnds9
 
 #-----------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level
@@ -52,17 +50,16 @@ LIBDIRS	:=	 $(LIBNDS) $(CURDIR)/..
 ifneq ($(BUILD),$(notdir $(CURDIR)))
 #-----------------------------------------------------------------------
 
-export OUTPUT	:=	$(CURDIR)/$(TARGET)
+export ARM9ELF := $(CURDIR)/$(TARGET).elf
+export DEPSDIR	:=	$(CURDIR)/$(BUILD)
 
 export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir)) \
 					$(foreach dir,$(DATA),$(CURDIR)/$(dir))
 
-export DEPSDIR	:=	$(CURDIR)/$(BUILD)
-
 CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
 CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
 SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
-BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.bin)))
+BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.)))
 PNGFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.png)))
 
 #-----------------------------------------------------------------------
@@ -84,25 +81,24 @@ export OFILES	:=	$(addsuffix .o,$(BINFILES)) \
 			$(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(SFILES:.s=.o)
 
 export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
-			$(foreach dir,$(LIBDIRS),-I$(dir)/include -I$(dir)/include/nds) \
-			$(foreach dir,$(LIBDIRS),-I$(dir)/lib) \
-			-I$(CURDIR)/$(BUILD)
+					$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
+					-I$(CURDIR)/$(BUILD)
 
 export LIBPATHS	:=	$(foreach dir,$(LIBDIRS),-L$(dir)/lib)
 
-.PHONY: $(BUILD) export dldi test install
+.PHONY: $(BUILD) clean
 
 all: $(BUILD)
 #-----------------------------------------------------------------------
 $(BUILD):
 	@[ -d $@ ] || mkdir -p $@
-	@make --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
+	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 
 #-----------------------------------------------------------------------
 clean:
 	@echo clean ...
 	@rm -fr $(BUILD)
-	@rm -fr $(TARGET).arm9.elf $(TARGET).arm9
+	@rm -fr $(TARGET).elf
 
 #-----------------------------------------------------------------------
 else
@@ -112,11 +108,14 @@ DEPENDS	:=	$(OFILES:.o=.d)
 #-----------------------------------------------------------------------
 # main targets
 #-----------------------------------------------------------------------
-$(OUTPUT).arm9	:	$(OUTPUT).arm9.elf
-$(OUTPUT).arm9.elf	:	$(OFILES)
+#$(OUTPUT).arm9	:	$(OUTPUT).arm9.elf
+#$(OUTPUT).arm9.elf	:	$(OFILES) $(LIBNDS)/lib/libfat.a
+$(ARM9ELF) : $(OFILES)
+	@echo linking $(notdir $@)
+	@$(LD)  $(LDFLAGS) $(OFILES) $(LIBPATHS) $(LIBS) -o $@
 
 #-----------------------------------------------------------------------
-%.o	:	%.bin
+%.bin.o %_bin.h : %.bin
 #-----------------------------------------------------------------------
 	@echo $(notdir $<)
 	$(bin2o)

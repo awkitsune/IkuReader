@@ -4,8 +4,14 @@
 #include "controls.h"
 #include "encoding_tables.h"
 #include <fstream>
-#include <sys/dir.h>
-#include <sys/unistd.h>
+
+#include <nds.h>
+#include <fat.h>
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <dirent.h>
 
 void Book :: read()
 {
@@ -405,23 +411,30 @@ void Book :: loadMarks()
 
 string fileReq(const string& path)
 {
-	char fname[MAXPATHLEN];
-	struct stat st;
-	DIR_ITER* dir = diropen(path.c_str());
+	char fname[MAXNAMLEN];
+	
+	DIR* dir = opendir(path.c_str());
+	struct dirent* ent;
 	if(!dir) bsod(("cannot open "  + path).c_str());
+
 	vector<button> buttons;
 	int peny = 0;
 	renderer::clearScreens(settings::bgCol);
-	while (0 == dirnext(dir, fname, &st)) {
-		string filename(fname);
-		if (!(st.st_mode & S_IFDIR)) {
+
+	while ((ent = readdir(dir)) != NULL) {
+		if(strcmp(".", ent->d_name) == 0 || strcmp("..", ent->d_name) == 0)
+			continue;
+
+		if (ent->d_type != DT_DIR)
+		{
+			string filename = ent->d_name;
 			if(extention(filename) == "txt")
 				buttons.push_back(button(filename.erase(filename.find_last_of('.')), peny));
 			buttons.back().draw();
 			peny += buttonFontSize;
 		}
 	}
-	dirclose(dir);
+	closedir(dir);
 	while(1) {
 		swiWaitForVBlank();
 		scanKeys();

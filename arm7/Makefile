@@ -14,27 +14,23 @@ include $(DEVKITARM)/ds_rules
 # SOURCES is a list of directories containing source code
 # INCLUDES is a list of directories containing extra header files
 #-----------------------------------------------------------------------
-#TARGET		:=	$(shell basename $(CURDIR))
-TARGET		:=	iku
+TARGET		:= 	arm7
 BUILD		:=	build
 SOURCES		:=	source
-INCLUDES	:=	../include build
+INCLUDES	:=	include build
 
 #-----------------------------------------------------------------------
 # options for code generation
 #-----------------------------------------------------------------------
-ARCH	:=	-mthumb -mthumb-interwork \
-		-mcpu=arm7tdmi -mtune=arm7tdmi
+ARCH	:=	-march=armv4t -mthumb -mthumb-interwork
 		
-CFLAGS	:=	-O2 -Wformat=2 -Wall -Winline \
-		-fomit-frame-pointer -ffast-math \
-		$(ARCH) $(INCLUDE) -DARM7 -DWIFI
+CFLAGS	:=	g -Wall -O3\
+		$(ARCH) $(INCLUDE) -DARM7
 
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions
 
 ASFLAGS	:=	-g $(ARCH)
-LDFLAGS	=	-specs=ds_arm7.specs -g $(ARCH) -mno-fpu -Wl,-Map,$(notdir $*.map)
-
+LDFLAGS := -specs=ds_arm7.specs -g $(ARCH) -Wl,--nmagic -Wl,-Map,$(notdir $*).map
 #-----------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #-----------------------------------------------------------------------
@@ -45,7 +41,6 @@ LIBS	:=  -lnds7
 # containing include and lib
 #-----------------------------------------------------------------------
 LIBDIRS	:=	 $(LIBNDS)
-
 #-----------------------------------------------------------------------
 # no real need to edit anything past this point unless you need to add
 # additional rules for different file extensions
@@ -53,15 +48,16 @@ LIBDIRS	:=	 $(LIBNDS)
 ifneq ($(BUILD),$(notdir $(CURDIR)))
 #-----------------------------------------------------------------------
 
-export OUTPUT	:=	$(CURDIR)/$(TARGET)
-
-export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir))
+export ARM7ELF	:=	$(CURDIR)/$(TARGET).elf
 export DEPSDIR	:=	$(CURDIR)/$(BUILD)
 
-CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
-CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
-SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
-BINFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.bin)))
+export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir))\
+                	$(foreach dir,$(DATA),$(CURDIR)/$(dir))
+
+CFILES   := $(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
+CPPFILES := $(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
+SFILES   := $(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
+BINFILES := $(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
 
 #-----------------------------------------------------------------------
 # use CXX for linking C++ projects, CC for standard C
@@ -77,29 +73,28 @@ else
 endif
 #-----------------------------------------------------------------------
 
-export OFILES	:=	$(BINFILES:.bin=.o) \
-			$(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(SFILES:.s=.o)
+export OFILES	:=	$(addsuffix .o,$(BINFILES)) \
+					$(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(SFILES:.s=.o)
 
-export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
-			$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
-			$(foreach dir,$(LIBDIRS),-I$(dir)/lib) \
-			-I$(CURDIR)/$(BUILD)
+export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir))\
+                   	$(foreach dir,$(LIBDIRS),-I$(dir)/include)\
+                   -I$(CURDIR)/$(BUILD)
 
 export LIBPATHS	:=	$(foreach dir,$(LIBDIRS),-L$(dir)/lib)
 
-.PHONY: $(BUILD)
+.PHONY: $(BUILD) clean
 
 all: $(BUILD)
 #-----------------------------------------------------------------------
 $(BUILD):
 	@[ -d $@ ] || mkdir -p $@
-	@make --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
+	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 
 #-----------------------------------------------------------------------
 clean:
 	@echo clean ...
 	@rm -fr $(BUILD)
-	@rm -fr $(TARGET).arm7.elf $(TARGET).arm7 
+	@rm -fr $(TARGET).elf
 
 #-----------------------------------------------------------------------
 else
@@ -109,15 +104,17 @@ DEPENDS	:=	$(OFILES:.o=.d)
 #-----------------------------------------------------------------------
 # main targets
 #-----------------------------------------------------------------------
-$(OUTPUT).arm7	:	$(OUTPUT).arm7.elf
-$(OUTPUT).arm7.elf	:	$(OFILES)
+#$(OUTPUT).arm7	:	$(OUTPUT).arm7.elf
+#$(OUTPUT).arm7.elf	:	$(OFILES)
+$(ARM7ELF) : $(OFILES)
+	@echo linking $(notdir $@)
+	@$(LD)  $(LDFLAGS) $(OFILES) $(LIBPATHS) $(LIBS) -o $@
 
 #-----------------------------------------------------------------------
-%.o	:	%.bin
+%.bin.o %_bin.h : %.bin
 #-----------------------------------------------------------------------
 	@echo $(notdir $<)
 	$(bin2o)
-
 
 -include $(DEPENDS)
 
