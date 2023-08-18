@@ -1,6 +1,9 @@
 # ![ikureader icon](https://github.com/awkitsune/IkuReader/blob/main/data/icon.bmp) IkuReader 
 an e-book reader for Nintendo DS
 
+<img src=https://github.com/awkitsune/IkuReader/assets/45891293/dd1f9030-7097-483a-a8eb-5d8b9175204e width=264/> 
+<img src=https://github.com/awkitsune/IkuReader/assets/45891293/1b66fb27-cdd4-47b3-b46a-cf8983326288 width=150/> 
+
 # About
 I'm not an author of this cource code! I just decided to update it to be able to use it on my Nintendo DSi without any quirks. All original info is in [info.txt](https://github.com/awkitsune/IkuReader/blob/main/info.txt) file.
 License is in [License.txt](https://github.com/awkitsune/IkuReader/blob/main/Licence.txt) file 
