@@ -3,7 +3,7 @@
 #-----------------------------------------------------------------------
 
 ifeq ($(strip $(DEVKITARM)),)
-$(error "DEVKITARM not in environment.")
+$(error "Please set DEVKITARM in your environment.")
 endif
 
 include $(DEVKITARM)/ds_rules
@@ -50,7 +50,7 @@ LIBDIRS	:=	 $(LIBNDS) $(CURDIR)/..
 ifneq ($(BUILD),$(notdir $(CURDIR)))
 #-----------------------------------------------------------------------
 
-export ARM9ELF := $(CURDIR)/$(TARGET).elf
+export ARM9ELF 	:= 	$(CURDIR)/$(TARGET).elf
 export DEPSDIR	:=	$(CURDIR)/$(BUILD)
 
 export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir)) \
@@ -77,8 +77,8 @@ endif
 #-----------------------------------------------------------------------
 
 export OFILES	:=	$(addsuffix .o,$(BINFILES)) \
-			$(PNGFILES:.png=.o) \
-			$(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(SFILES:.s=.o)
+					$(PNGFILES:.png=.o) \
+					$(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(SFILES:.s=.o)
 
 export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
 					$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
