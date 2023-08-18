@@ -26,7 +26,7 @@ void file_browser :: cd()
 
 	DIR* dir = opendir(path.c_str());
 	struct dirent* ent;
-	if(!dir) bsod(("cannot open "  + path).c_str());
+	if(!dir) bsod(("file_browser.cd: cannot open "  + path).c_str());
 
 	if(path != "/") flist.push_back(entry(folder, ".."));
 
@@ -34,7 +34,7 @@ void file_browser :: cd()
 		if(strcmp(".", ent->d_name) == 0 || strcmp("..", ent->d_name) == 0)
 			continue;
 
-		if ((ent->d_type != DT_DIR)) {
+		if ((ent->d_type == DT_DIR)) {
 			flist.push_back(entry(folder, ent->d_name));
 		}
 		else {
@@ -77,7 +77,7 @@ string file_browser :: run()
 	string start_path = settings::recent_book.substr(0, settings::recent_book.find_last_of('/')) + '/';
 	
 	DIR* dir = opendir(path.c_str());
-	if(!dir) bsod(("cannot open "  + path).c_str());
+	if(!dir) bsod(("file_browser.run(): cannot open "  + path).c_str());
 
 	if(dir == NULL || settings::recent_book.empty()) {
 		start_path = "/books/";

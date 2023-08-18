@@ -60,10 +60,10 @@ int main(int argc, char *argv[])
 	settings::binname = binname;
 
 	iprintf("loading file system... ");
-	if (!fatInitDefault()) bsod("error\n\ntried DLDI patch?");
+	if (!fatInitDefault()) bsod("main: error\n\ntried DLDI patch?");
 	consoleClear();
 	DIR* dir = opendir("/data/ikureader/");
-	if(!dir) bsod("\nFolder data/ikureader not found.\nCopy it to the root of your\nflash card from the installation package.");
+	if(!dir) bsod("main: \nFolder data/ikureader not found.\nCopy it to the root of your\nflash card from the installation package.");
 	closedir(dir);
 	settings::load();
 	iprintf("loading fonts... ");

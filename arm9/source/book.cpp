@@ -387,7 +387,7 @@ void Book :: saveMarks()
 		os.clear();
 		os.open(encname.c_str());
 	}
-	if(!os.good()) bsod("Can't save bookmarks.");
+	if(!os.good()) bsod("book.save_marks: Can't save bookmarks.");
 	os<<current_page.parag_num<<'\n';
 	for (std::set<bookmark>::iterator it = bookmarks.begin(); it != bookmarks.end(); ++it)
 		os<<it->parag_num<<'\n';
@@ -415,7 +415,7 @@ string fileReq(const string& path)
 	
 	DIR* dir = opendir(path.c_str());
 	struct dirent* ent;
-	if(!dir) bsod(("cannot open "  + path).c_str());
+	if(!dir) bsod(("book.filereq: cannot open "  + path).c_str());
 
 	vector<button> buttons;
 	int peny = 0;
