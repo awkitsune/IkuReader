@@ -8,6 +8,11 @@ an e-book reader for Nintendo DS
 I'm not an author of this cource code! I just decided to update it to be able to use it on my Nintendo DSi without any quirks. All original info is in [info.txt](https://github.com/awkitsune/IkuReader/blob/main/info.txt) file.
 License is in [License.txt](https://github.com/awkitsune/IkuReader/blob/main/Licence.txt) file 
 
+## Instructions
+Download latest release contents from [Latest release](https://github.com/awkitsune/IkuReader/releases/latest) page
+
+Unpack `sdcard-root.zip` content to the root of your sdcard and put `.dsi` or `.nds` file depending on your console: `.dsi` for installing to Hiya or using with direct boot, `.nds` for DS flashcards.
+
 # Compilation
 Should be working with latest devkitPro and libnds.
 
