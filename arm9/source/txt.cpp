@@ -4,7 +4,7 @@
 void txt_book :: parse()
 {
 	file_stream.open (bookFile.c_str(), std::fstream::binary);
-	if(!file_stream.good()) bsod("Can't open book");
+	if(!file_stream.good()) bsod("txt.txt_book:Can't open book");
 	const u8 Bom[] = "\xEF\xBB\xBF";
 	char beginning[3];
 	file_stream.read(beginning, 3);

@@ -22,11 +22,10 @@ void file_browser :: cd()
 {
 	pos = 0;
 	flist.clear();
-	char fname[MAXNAMLEN];
 
 	DIR* dir = opendir(path.c_str());
 	struct dirent* ent;
-	if(!dir) bsod(("file_browser.cd: cannot open "  + path).c_str());
+	if(!dir) bsod(("file_browser.cd:cannot open "  + path).c_str());
 
 	if(path != "/") flist.push_back(entry(folder, ".."));
 
@@ -77,7 +76,7 @@ string file_browser :: run()
 	string start_path = settings::recent_book.substr(0, settings::recent_book.find_last_of('/')) + '/';
 	
 	DIR* dir = opendir(path.c_str());
-	if(!dir) bsod(("file_browser.run(): cannot open "  + path).c_str());
+	if(!dir) bsod(("file_browser.run:cannot open "  + path).c_str());
 
 	if(dir == NULL || settings::recent_book.empty()) {
 		start_path = "/books/";

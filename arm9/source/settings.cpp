@@ -90,8 +90,8 @@ void load()
 	}
 	
 	if(end.compare("end") || !techCorrect) {  //bad settings file
-		iprintf("Warning: Can't read settings. Try using different firmware/loader.\n");
-		iprintf("Press A to load defaults.\n");
+		iprintf("settings.load:Warning: Can't read settings. Try using different firmware/loader.\n");
+		iprintf("settings.load:Press A to load defaults.\n");
 		while(!(keysDown() & KEY_A)) {scanKeys();}
 		reset();
 		save();
@@ -104,7 +104,7 @@ void save()
 	std::ofstream os;
 	os.open(SETTFILE, std::ios::binary);
 	os.seekp(0 , std::ios::beg);
-	if(!os.good() || !os.is_open()) bsod("Can't save settigns.");
+	if(!os.good() || !os.is_open()) bsod("settings.save:Can't save settings.");
 	settStruct st;
 	os.write((char*)&st, sizeof(settStruct));
 	os<<font		<<'\n'<<

@@ -18,7 +18,7 @@ u32 loadFromZip(unzFile& zip, const char* file, char *&buf)
 			if(buf == NULL) bsod("Out of memory");
 			unzReadCurrentFile(zip, buf, info.uncompressed_size);
 			unzCloseCurrentFile(zip);
-		} else bsod("Can't open epub. (3)");
+		} else bsod("epub.loadFromZip:Can't open epub. (3)");
 	} else bsod("Can't open epub. (2)");
 	return info.uncompressed_size;
 }
@@ -29,10 +29,10 @@ void epub_book :: parse()
 	{
 		encoding = eUtf8;
 		pugi::xml_document doc;
-		const char err[] = "Can't load epub. (1)";
+		const char err[] = "epub_book::parse:Can't load epub. (1)";
 		char *buf = NULL;
 		unzFile hArchiveFile = unzOpen(bookFile.c_str());
-		if (hArchiveFile == NULL) bsod("Can't open epub.");
+		if (hArchiveFile == NULL) bsod("epub_book::parse:Can't open epub.");
 			
 		loadFromZip(hArchiveFile, "META-INF/container.xml", buf);
 		pugi::xml_parse_result result = doc.load(buf);
@@ -68,9 +68,9 @@ void epub_book :: parse()
 		renderer::clearScreens(0);
 		for(u32 i = 0; i < chapter_files.size(); i++) {
 			consoleClear();
-			iprintf("unpacking %d/%d\n", i+1, chapter_files.size());
+			iprintf("unpacking %lu/%d\n", i+1, chapter_files.size());
 			u32 size = loadFromZip(hArchiveFile, (chapter_path + chapter_files[i]).c_str(), buf);
-			if(offsets.back() + size > giant_buf_size - 1u) bsod("book buffer exhausted");
+			if(offsets.back() + size > giant_buf_size - 1u) bsod("epub_book::parse:book buffer exhausted");
 			memcpy(giant_buffer + offsets[i], buf, size);
 			offsets.push_back(offsets.back() + size);
 			delete[] buf;
@@ -81,7 +81,7 @@ void epub_book :: parse()
 	iprintf("parsing...\n");
 	pugi::xml_parse_result result = document.load_buffer_inplace(giant_buffer, offsets.back());
 	if(result.status != pugi::status_ok) {
-		if(result.status == pugi::status_out_of_memory) bsod("Out of memory.");
+		if(result.status == pugi::status_out_of_memory) bsod("epub_book::parse:Out of memory.");
 		//else bsod("Parser error (bad format).");
 	}
 	parse_doc(document);

@@ -411,8 +411,6 @@ void Book :: loadMarks()
 
 string fileReq(const string& path)
 {
-	char fname[MAXNAMLEN];
-	
 	DIR* dir = opendir(path.c_str());
 	struct dirent* ent;
 	if(!dir) bsod(("book.filereq: cannot open "  + path).c_str());

@@ -31,7 +31,7 @@ void drawMenu()
 	menu.push(SAY(light), 3);
 	renderer::clearScreens(settings::bgCol);
 	menu.draw();
-	renderer::printStr(eUtf8, top_scr,5,17,"IkuReader 0.065",0,0,12);
+	renderer::printStr(eUtf8, top_scr,5,17,"IkuReader 6.5_modern",0,0,12);
 	powerOn(PM_BACKLIGHT_BOTTOM | PM_BACKLIGHT_TOP);
 }
 
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 	settings::binname = binname;
 
 	iprintf("loading file system... ");
-	if (!fatInitDefault()) bsod("main: error\n\ntried DLDI patch?");
+	if (!fatInitDefault()) bsod("main:error\n\ntried DLDI patch?");
 	consoleClear();
 	DIR* dir = opendir("/data/ikureader/");
 	if(!dir) bsod("main: \nFolder data/ikureader not found.\nCopy it to the root of your\nflash card from the installation package.");

@@ -3,7 +3,7 @@
 #include <algorithm>
 #include "renderer.h"
 
-const char giant_buf_err[] = "Exhausted book buffer.";
+const char giant_buf_err[] = "fb2.bufferFb2:Exhausted book buffer.";
 
 u32 bufferFb2(const char* file)
 {
@@ -30,7 +30,7 @@ u32 bufferFb2(const char* file)
 u32 fb2_loadToGiantBuffer(const char* filename)
 {
 	FILE* File = fopen(filename, "rb"); 
-	if(File == NULL) bsod("Can't load file.");
+	if(File == NULL) bsod("fb2.fb2_loadToGiantBuffer:Can't load file.");
 	fseek(File, 0 , SEEK_END);
 	int size = ftell (File);
 	rewind(File);
@@ -39,7 +39,7 @@ u32 fb2_loadToGiantBuffer(const char* filename)
 		return bufferFb2(filename);
 	}
 	int read = fread(giant_buffer, 1, size, File);
-	if(read < size) bsod("Error reading file.");
+	if(read < size) bsod("fb2.fb2_loadToGiantBuffer:Error reading file.");
 	fclose(File);
 	return size;
 }
@@ -49,8 +49,8 @@ void fb2_book :: parse()
 	u32 size = fb2_loadToGiantBuffer(bookFile.c_str());
 	pugi::xml_parse_result result = doc.load_buffer_inplace(giant_buffer, size, pugi::parse_default | pugi::parse_declaration);
 	if(result.status != pugi::status_ok) {
-		if(result.status == pugi::status_out_of_memory) bsod("Out of memory.");
-		else bsod("Parser error (bad format).");
+		if(result.status == pugi::status_out_of_memory) bsod("fb2.fb2_book:Out of memory.");
+		else bsod("fb2.fb2_book:Parser error (bad format).");
 	}
 	push_it = true;
 	string enc = doc.first_child().attribute("encoding").value();

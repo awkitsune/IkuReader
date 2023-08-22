@@ -3,8 +3,6 @@
 #include "encoding_tables.h"
 #include <algorithm>
 #include <time.h>
-#include <sys/dir.h>
-#include <sys/unistd.h>
 #include <set>
 
 #include <nds.h>
@@ -195,7 +193,7 @@ FT_Error ftcFaceRequester(FTC_FaceID faceID, FT_Library lib, FT_Pointer reqData,
 	else file = p + *st;
 	
 	FT_Error ft_err = FT_New_Face (ft_lib, file.c_str(), 0, aface); 
-	if(ft_err) bsod("Can't load font.");
+	if(ft_err) bsod("renderer.ftcFaceRequester:Can't load font.");
 	FT_Select_Charmap(face, FT_ENCODING_UNICODE);
 	return ft_err;
 }
@@ -213,7 +211,7 @@ void initFonts()
 		FT_Library_SetLcdFilter(ft_lib, FT_LCD_FILTER_DEFAULT) ||
 		FTC_Manager_New(ft_lib, 3, 0, 0, ftcFaceRequester, 0, &ftcManager) ||
 		FTC_SBitCache_New(ftcManager, &ftcSBitCache)
-	) bsod("Freetype error.");
+	) bsod("renderer.init_fonts:Freetype error.");
 	FTC_Manager_LookupFace(ftcManager, &settings::font, &face);
 	FTC_Manager_LookupFace(ftcManager, &settings::font_bold, &faceB);
 	FTC_Manager_LookupFace(ftcManager, &settings::font_italic, &faceI);
@@ -383,13 +381,12 @@ void printClock(scr_id scr, bool forced)
 
 void changeFont()
 {
-	char fname[MAXNAMLEN];
 	DIR* dir = opendir ("/data/ikureader/fonts/");
-	if (dir == NULL) bsod("Cannot open fonts directory.");
+	if (dir == NULL) bsod("renderer.change_font:Cannot open fonts directory.");
 	struct dirent* ent;
 	std::set<string> files;
 	while ((ent = readdir(dir)) != NULL)
-		if (ent->d_type != DT_DIR) if(extention(fname) == "ttf") files.insert(noExt(fname));
+		if (ent->d_type != DT_DIR) if(extention(ent->d_name) == "ttf") files.insert(noExt(ent->d_name));
 	closedir(dir);
 	std::set<string> fonts;
 	
@@ -397,7 +394,7 @@ void changeFont()
 		if(files.find(*it + 'b') != files.end() && files.find(*it + 'i') != files.end())
 			fonts.insert(*it);
 	
-	if(fonts.empty()) bsod("No fonts found.");
+	if(fonts.empty()) bsod("renderer.change_font:No fonts found.");
 	
 	std::set<string>::iterator current = ++fonts.find(noExt(settings::font));
 	if(current == fonts.end()) current = fonts.begin();
@@ -408,6 +405,7 @@ void changeFont()
 	FTC_Manager_Done(ftcManager);
 	FT_Done_FreeType(ft_lib);
 	initFonts();
+	save();
 }
 
 void TFlashClock :: show(scr_id scr)

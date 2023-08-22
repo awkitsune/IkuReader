@@ -3,6 +3,24 @@
         "fstream": "cpp",
         "xstring": "cpp",
         "vector": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "xtree": "cpp",
+        "set": "cpp",
+        "functional": "cpp",
+        "random": "cpp",
+        "xlocale": "cpp",
+        "xlocnum": "cpp",
+        "xloctime": "cpp",
+        "istream": "cpp",
+        "array": "cpp",
+        "deque": "cpp",
+        "initializer_list": "cpp",
+        "list": "cpp",
+        "queue": "cpp",
+        "ranges": "cpp",
+        "span": "cpp",
+        "type_traits": "cpp",
+        "xhash": "cpp",
+        "xutility": "cpp"
     }
 }
